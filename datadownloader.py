@@ -18,24 +18,29 @@ count = 0
 # print(job_ids)
 maindf = pd.DataFrame() 
 for id in job_ids:
-    # print(id)
-    new_url = URL.format(id=str(id))
-    # print(new_url)
-    r = requests.get(new_url)
-    data = json.loads(r.content)
-    item = data["items"][0]
-    # print(item)
-    # print(item.keys())
-    # print(item.values())
-    location = data["items"][0]["workLocation"][0]
-    value = list(item.values()) + list(location.values())
-    keys = list(item.keys())+ list(location.keys())
-    df = pd.DataFrame([value], columns=keys)
-    if maindf.empty:
-        maindf = df
-    else:
-        maindf = pd.concat([maindf, df], ignore_index=True)
-        # maindf.append(df)
+    try:
+        # print(id)
+        new_url = URL.format(id=str(id))
+        # print(new_url)
+        r = requests.get(new_url)
+        data = json.loads(r.content)
+    
+        if data["items"] and len(data["items"]) >0:
+            item = data["items"][0]
+            # print(item)
+            # print(item.keys())
+            # print(item.values())
+            location = data["items"][0]["workLocation"][0]
+            value = list(item.values()) + list(location.values())
+            keys = list(item.keys())+ list(location.keys())
+            df = pd.DataFrame([value], columns=keys)
+            if maindf.empty:
+                maindf = df
+            else:
+                maindf = pd.concat([maindf, df], ignore_index=True)
+                # maindf.append(df)
+    except Exception as ex:
+        print(id)
     if count >1000:
         break
     count+=1
